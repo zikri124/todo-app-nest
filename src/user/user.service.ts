@@ -20,8 +20,8 @@ export class UserService {
     await bcrypt.hash(createUserDto.password, saltRounds).then(async(hash) => {
       createUserDto.password = hash
     })
-    const newUser = await this.userRepo.create(createUserDto)
-    return this.userRepo.save(newUser)
+    const newUser = await this.userRepo.create(createUserDto);
+    return this.userRepo.save(newUser);
   }
 
   async findAll(): Promise<UserDto[]> {
@@ -35,14 +35,11 @@ export class UserService {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<UserDto> {
-    await this.userRepo.update(id, updateUserDto)
+    await this.userRepo.update(id, updateUserDto);
     return await this.findOne(id);
   }
 
   async remove(id: string) {
-    return await this.userRepo.delete(id)
-    // .then(() => {
-    //   return `Data with ${id} successfully deleted`;
-    // })
+    return await this.userRepo.delete(id);
   }
 }
