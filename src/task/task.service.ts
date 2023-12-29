@@ -4,17 +4,33 @@ import { UpdateTaskDto } from './dto/update-task.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Task } from './entities/task.entity';
 import { Repository } from 'typeorm';
+import { User } from 'src/user/entities/user.entity';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class TaskService {
   constructor(
     @InjectRepository(Task)
-    private taskRepo: Repository<Task>
+    private taskRepo: Repository<Task>,
+    @InjectRepository(User)
+    private userRepo: Repository<User>
   ) {}
   
   async create(createTaskDto: CreateTaskDto): Promise<Task> {
-    const newUser = await this.taskRepo.create(createTaskDto)
-    return this.taskRepo.save(newUser);
+    // const userId = createTaskDto.user_id
+    // const userService = new UserService(this.userRepo)
+    // const user = await userService.findOne(userId)
+    // const dto = new CreateTaskDto()
+    // dto.user = user
+    // createTaskDto.user = user
+    const user = await this.userRepo.findOne({
+      where: {
+        id: createTaskDto.user_id
+      }
+    })
+    const newTask = await this.taskRepo.create(createTaskDto)
+    newTask.user = user
+    return this.taskRepo.save(newTask);
   }
 
   async findAll(): Promise<Task[]> {

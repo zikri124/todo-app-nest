@@ -1,6 +1,11 @@
 import { Task } from "src/task/entities/task.entity";
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
+export enum UserRole {
+  ADMIN = "ADMIN",
+  USER = "USER"
+}
+
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
@@ -11,6 +16,13 @@ export class User {
 
   @Column()
   password: string;
+
+  @Column({
+    type: "enum",
+    enum: UserRole,
+    default: UserRole.USER
+  })
+  role: string;
 
   @OneToMany(type => Task, task => task.user)
   tasks!: Task[];

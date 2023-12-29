@@ -1,6 +1,11 @@
 import { User } from "src/user/entities/user.entity";
 import { Column, CreateDateColumn, ManyToOne, JoinColumn, PrimaryGeneratedColumn, UpdateDateColumn, Entity } from "typeorm";
 
+export enum TaskStatus {
+    COMPLETE = "COMPLETE",
+    NOT_COMPLETE = "NOT_COMPLETE"
+}
+
 @Entity()
 export class Task {
     @PrimaryGeneratedColumn('uuid')
@@ -15,6 +20,13 @@ export class Task {
         referencedColumnName: 'id'
     })
     user: User;
+
+    @Column({
+        type: "enum",
+        enum: TaskStatus,
+        default: TaskStatus.NOT_COMPLETE
+    })
+    status: string;
 
     @Column('text')
     content: string;
