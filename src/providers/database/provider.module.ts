@@ -25,4 +25,4 @@ import { TypeOrmModule, TypeOrmModuleAsyncOptions } from '@nestjs/typeorm';
         } as TypeOrmModuleAsyncOptions),
     ]
 })
-export class ProviderModule { }
+export class DbProviderModule { }

@@ -11,13 +11,19 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private userRepo: Repository<User>
-  ) {}
-  
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  ) { }
+
+  async create(createUserDto: CreateUserDto) {
     const bcrypt = require('bcrypt');
     const saltRounds = 10;
 
-    await bcrypt.hash(createUserDto.password, saltRounds).then(async(hash) => {
+    const checkUserExist = await this.findOneByName(createUserDto.name);
+
+    if (checkUserExist) {
+      return { success: false, message: "User already registered" };
+    }
+
+    await bcrypt.hash(createUserDto.password, saltRounds).then(async (hash) => {
       createUserDto.password = hash
     })
     const newUser = await this.userRepo.create(createUserDto);
@@ -29,14 +35,37 @@ export class UserService {
       .then(users => users.map(user => UserDto.fromEntity(user)));
   }
 
-  async findOne(id: string): Promise<UserDto> {
-    return await this.userRepo.findOneBy({ id })
-      .then(user => UserDto.fromEntity(user));
+  async findOneById(id: string): Promise<UserDto> {
+    const userFind = await this.userRepo.findOne({
+      where: {
+        id: id
+      }
+    })
+
+    if (!userFind) {
+      return null
+    }
+
+    return UserDto.fromEntity(userFind)
+  }
+
+  async findOneByName(name: string) {
+    const userFind = await this.userRepo.findOne({
+      where: {
+        name: name
+      }
+    })
+
+    if (!userFind) {
+      return null
+    }
+
+    return UserDto.fromEntity(userFind)
   }
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<UserDto> {
     await this.userRepo.update(id, updateUserDto);
-    return await this.findOne(id);
+    return await this.findOneById(id);
   }
 
   async remove(id: string) {

@@ -8,5 +8,9 @@ export default () => ({
         username: process.env.DB_USERNAME,
         database: process.env.DB_DATABASE,
         sync: process.env.DB_SYNCRONIZE
-    }
+    },
+    jwt: {
+        secret: process.env.JWT_SECRET,
+        expireTime: process.env.JWT_EXPIRE_TIME 
+    } 
 })

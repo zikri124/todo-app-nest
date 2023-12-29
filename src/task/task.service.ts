@@ -5,7 +5,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Task } from './entities/task.entity';
 import { Repository } from 'typeorm';
 import { User } from 'src/user/entities/user.entity';
-import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class TaskService {
@@ -17,12 +16,6 @@ export class TaskService {
   ) {}
   
   async create(createTaskDto: CreateTaskDto): Promise<Task> {
-    // const userId = createTaskDto.user_id
-    // const userService = new UserService(this.userRepo)
-    // const user = await userService.findOne(userId)
-    // const dto = new CreateTaskDto()
-    // dto.user = user
-    // createTaskDto.user = user
     const user = await this.userRepo.findOne({
       where: {
         id: createTaskDto.user_id
