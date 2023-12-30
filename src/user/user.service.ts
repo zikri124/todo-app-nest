@@ -3,7 +3,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { DeleteResult, Repository } from 'typeorm';
+import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { UserDto } from './dto/user.dto';
 
 @Injectable()
@@ -14,18 +14,18 @@ export class UserService {
   ) { }
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const bcrypt = require('bcrypt');
-    const saltRounds = 10;
-
-    const checkUserExist = await this.findOneByName(createUserDto.name);
+    const checkUserExist = await this.userRepo.findOne({
+      where: {
+        name: createUserDto.name
+      }
+    });
 
     if (checkUserExist) {
       throw new ConflictException('Username already exixt', { cause: new Error(), description: 'Cant register with this username, because it is already registered' })
     }
+    
+    createUserDto.password = await this.hashPassword(createUserDto.password)
 
-    await bcrypt.hash(createUserDto.password, saltRounds).then(async (hash) => {
-      createUserDto.password = hash
-    })
     const newUser = await this.userRepo.create(createUserDto);
     return this.userRepo.save(newUser);
   }
@@ -63,12 +63,27 @@ export class UserService {
     return UserDto.fromEntity(userFind)
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto): Promise<UserDto> {
-    await this.userRepo.update(id, updateUserDto);
-    return await this.findOneById(id);
+  async update(id: string, updateUserDto: UpdateUserDto): Promise<UpdateResult> {
+    await this.findOneById(id);
+
+    if (updateUserDto.password != undefined) {
+      updateUserDto.password = await this.hashPassword(updateUserDto.password)
+    }
+
+    return await this.userRepo.update(id, updateUserDto);
   }
 
   async remove(id: string): Promise<DeleteResult> {
+    await this.findOneById(id);
     return await this.userRepo.delete(id);
+  }
+
+  async hashPassword(password: string): Promise<string> {
+    const bcrypt = require('bcrypt');
+    const saltRounds = 10;
+
+    const hashedPassword = await bcrypt.hash(password, saltRounds)
+
+    return hashedPassword
   }
 }

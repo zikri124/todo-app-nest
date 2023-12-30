@@ -42,6 +42,7 @@ export class AuthService {
 
         return {
             success: true,
+            message: "Sign In success",
             token: token
         };
     }
@@ -57,6 +58,7 @@ export class AuthService {
     
             return {
                 success: true,
+                message: "User registered successfully",
                 token: token
             };
         } else {

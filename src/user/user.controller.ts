@@ -11,12 +11,16 @@ export class UserController {
 
   @Get()
   async findAll() {
-    return await this.userService.findAll();
+    return {
+      users: await this.userService.findAll()
+    };
   }
 
   @Get(':id')
   async findOneById(@Param('id') id: string) {
-    return this.userService.findOneById(id);
+    return {
+      user: await this.userService.findOneById(id)
+    };
   }
 
   @Post()
