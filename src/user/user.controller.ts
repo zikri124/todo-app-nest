@@ -10,7 +10,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  async findAll(): Promise<UserDto[]> {
+  async findAll() {
     return await this.userService.findAll();
   }
 
@@ -25,7 +25,7 @@ export class UserController {
   }
 
   @Put(':id')
-  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<any> {
+  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return await this.userService.update(id, updateUserDto);
   }
 

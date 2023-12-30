@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 import { UserDto } from './dto/user.dto';
 
 @Injectable()
@@ -13,14 +13,14 @@ export class UserService {
     private userRepo: Repository<User>
   ) { }
 
-  async create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto): Promise<User> {
     const bcrypt = require('bcrypt');
     const saltRounds = 10;
 
     const checkUserExist = await this.findOneByName(createUserDto.name);
 
     if (checkUserExist) {
-      return { success: false, message: "User already registered" };
+      throw new ConflictException('Username already exixt', { cause: new Error(), description: 'Cant register with this username, because it is already registered' })
     }
 
     await bcrypt.hash(createUserDto.password, saltRounds).then(async (hash) => {
@@ -43,13 +43,13 @@ export class UserService {
     })
 
     if (!userFind) {
-      return null
+      throw new NotFoundException('The user you want to find with that id was not found', { cause: new Error(), description: 'The user you want to find with that id was not found, please insert the correct id' });
     }
 
     return UserDto.fromEntity(userFind)
   }
 
-  async findOneByName(name: string) {
+  async findOneByName(name: string): Promise<UserDto> {
     const userFind = await this.userRepo.findOne({
       where: {
         name: name
@@ -57,7 +57,7 @@ export class UserService {
     })
 
     if (!userFind) {
-      return null
+      throw new NotFoundException('The user you want to find was not found', { cause: new Error(), description: `The user you want to find with username: "${name}" was not found, please insert the correct username` });
     }
 
     return UserDto.fromEntity(userFind)
@@ -68,7 +68,7 @@ export class UserService {
     return await this.findOneById(id);
   }
 
-  async remove(id: string) {
+  async remove(id: string): Promise<DeleteResult> {
     return await this.userRepo.delete(id);
   }
 }
