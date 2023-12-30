@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { SignInDto } from './dto/siginIn.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -25,13 +25,13 @@ export class AuthService {
         });
 
         if (!checkUserExist) {
-            return { success: false, message: "User didn't exist" };
+            throw new UnauthorizedException('Wrong username or password', { cause: new Error(), description: 'Wrong username or password' });
         }
 
         const isPasswordValid = await bcrypt.compare(signInDto.password, checkUserExist.password);
 
         if (!isPasswordValid) {
-            return { success: false, message: "Wrong password" };
+            throw new UnauthorizedException('Wrong username or password', { cause: new Error(), description: 'Wrong username or password' });
         }
 
         const token = await this.createAuthToken({
@@ -60,7 +60,7 @@ export class AuthService {
                 token: token
             };
         } else {
-            return respond
+            return respond;
         }
     }
 
