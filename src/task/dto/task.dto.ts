@@ -12,7 +12,8 @@ export class TaskDto {
         return {
             id: entity.id,
             title: entity.title,
-            user_id: entity.user,
+            content: entity.content,
+            user_id: entity.user.id,
             createdAt: entity.createdAt,
             updatedAt: entity.updatedAt,
         };
