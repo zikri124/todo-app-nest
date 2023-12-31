@@ -7,6 +7,9 @@ import { DbProviderModule } from './providers/database/provider.module';
 import { UserModule } from './user/user.module';
 import { TaskModule } from './task/task.module';
 import { AuthModule } from './auth/auth.module';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from './common/guard/auth/auth.guard';
+import { JwtProviderModule } from './providers/jwt/provider.module';
 
 @Module({
   imports: [
@@ -18,9 +21,16 @@ import { AuthModule } from './auth/auth.module';
     DbProviderModule,
     UserModule,
     TaskModule,
-    AuthModule
+    AuthModule,
+    JwtProviderModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },],
 })
-export class AppModule {}
+
+export class AppModule { }

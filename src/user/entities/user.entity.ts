@@ -1,10 +1,6 @@
+import { UserRole } from "src/common/constants/userRoles.enum";
 import { Task } from "src/task/entities/task.entity";
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-
-export enum UserRole {
-  ADMIN = "ADMIN",
-  USER = "USER"
-}
 
 @Entity()
 export class User {

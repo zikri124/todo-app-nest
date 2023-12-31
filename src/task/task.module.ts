@@ -7,10 +7,13 @@ import { User } from 'src/user/entities/user.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Task]), 
-    TypeOrmModule.forFeature([User])],
+    TypeOrmModule.forFeature([Task]),
+    TypeOrmModule.forFeature([User]),
+  ],
   controllers: [TaskController],
-  providers: [TaskService],
+  providers: [
+    TaskService
+  ],
   exports: [TaskService]
 })
-export class TaskModule {}
+export class TaskModule { }
