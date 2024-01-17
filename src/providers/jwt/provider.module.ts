@@ -13,7 +13,7 @@ import { JwtModule } from "@nestjs/jwt";
           }
         }),
         inject: [ConfigService]
-      } as JwtModule)
+      })
     ],
     exports: [JwtModule]
 })

@@ -3,6 +3,8 @@ import { TaskService } from './task.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { RoleGuard } from 'src/common/guard/role/role.guard';
+import { UserRole } from 'src/common/constants/userRoles.enum';
+import { Roles } from 'src/common/decorators/roles.decorator';
 
 @Controller('task')
 export class TaskController {
@@ -14,6 +16,7 @@ export class TaskController {
   }
 
   @Get()
+  @Roles(UserRole.ADMIN)
   async findAll() {
     return {
       tasks: await this.taskService.findAll()
